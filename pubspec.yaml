@@ -12,7 +12,7 @@ dependencies:
   http: ^0.12.1
   html: ^0.14.0+3
   package_info: ^0.4.1
-  launch_review: ^2.0.0
+  open_appstore: ^1.0.2
 
 dev_dependencies:
   flutter_test:
