@@ -127,7 +127,21 @@ class CheckVersion {
     Text title = Text(titleText);
     final content = Text(message);
     Text dismiss = Text(dismissText);
-    final dismissAction = _launchexit();
+    final dismissAction = (){
+      if (Platform.isIOS) {
+        try {
+          exit(0);
+        } catch (e) {
+          SystemNavigator.pop(); // for IOS, not true this, you can make comment this :)
+        }
+      } else {
+        try {
+          SystemNavigator.pop(); // sometimes it cant exit app
+        } catch (e) {
+          exit(0); // so i am giving crash to app ... sad :(
+        }
+      }
+    };
     Text update = Text(updateText);
     final updateAction = () {
       launch(versionStatus.appStoreUrl);
@@ -167,26 +181,6 @@ class CheckVersion {
               );
       },
     );
-  }
-
-  void _launchAppStore(String androidApplicationId, String iOSAppId) async {
-    OpenAppstore.launch(androidApplicationId, iOSAppId);
-  }
-
-  VoidCallback _launchexit() {
-    if (Platform.isIOS) {
-      try {
-        exit(0);
-      } catch (e) {
-        SystemNavigator.pop(); // for IOS, not true this, you can make comment this :)
-      }
-    } else {
-      try {
-        SystemNavigator.pop(); // sometimes it cant exit app
-      } catch (e) {
-        exit(0); // so i am giving crash to app ... sad :(
-      }
-    }
   }
 
 }
