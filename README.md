@@ -6,6 +6,20 @@ See more at the [Dart Packages page.](https://pub.dartlang.org/packages/new_vers
 
 ![Screenshots](screenshots/ios.png)!
 
+## IOS 
+
+Thanks to Edouard Marquez for adding the iOS functionality.
+
+For iOS 9 and above, your Info.plist file MUST have the following:
+
+```
+<key>LSApplicationQueriesSchemes</key>
+<array>
+        <string>itms-beta</string>
+        <string>itms</string>
+</array>
+```
+
 ## Installation
 Add force_update as a dependency in your pubspec.yaml file.
 ```dependencies:

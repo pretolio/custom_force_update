@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:launch_review/launch_review.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -144,7 +145,9 @@ class CheckVersion {
     };
     Text update = Text(updateText);
     final updateAction = () {
-      launch(versionStatus.appStoreUrl);
+      LaunchReview.launch(
+          androidAppId: androidApplicationId,
+          iOSAppId: iOSAppId);
     };
     final platform = Theme.of(context).platform;
     showDialog(
@@ -182,8 +185,9 @@ class CheckVersion {
       },
     );
   }
-
 }
+
+
 
 class OpenAppstore {
   static MethodChannel _channel = MethodChannel('flutter.moum.open_appstore');
