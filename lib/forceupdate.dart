@@ -10,6 +10,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:package_info/package_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppVersionStatus {
   bool canUpdate;
@@ -122,6 +123,7 @@ class CheckVersion {
   void showUpdateDialog(
     String androidApplicationId,
     String iOSAppId, {
+    String urlIos,
     AppVersionStatus versionStatus,
     String message = "You can now update this app from store.",
     String titleText = 'Update Available',
@@ -148,7 +150,7 @@ class CheckVersion {
     };
     Text update = Text(updateText);
     final updateAction = () {
-      Platform.isIOS ? OpenAppstore.launch(androidApplicationId, iOSAppId) :
+      Platform.isIOS ? launch(urlIos) :
       LaunchReview.launch(
           androidAppId: androidApplicationId,
           iOSAppId: iOSAppId,
