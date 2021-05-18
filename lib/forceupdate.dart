@@ -1,7 +1,6 @@
 library forceupdate;
 
 import 'dart:io';
-
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html;
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:package_info/package_info.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AppVersionStatus {
   bool canUpdate;
