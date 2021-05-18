@@ -145,7 +145,9 @@ class CheckVersion {
     final updateAction = () {
       LaunchReview.launch(
           androidAppId: androidApplicationId,
-          iOSAppId: iOSAppId);
+          iOSAppId: iOSAppId,
+          writeReview: !Platform.isIOS
+      );
     };
     final platform = Theme.of(context).platform;
     showDialog(
