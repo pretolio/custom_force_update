@@ -1,22 +1,28 @@
 PODS:
   - Flutter (1.0.0)
+  - launch_review (0.0.1):
+    - Flutter
   - package_info (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - launch_review (from `.symlinks/plugins/launch_review/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  launch_review:
+    :path: ".symlinks/plugins/launch_review/ios"
   package_info:
     :path: ".symlinks/plugins/package_info/ios"
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  launch_review: 75d5a956ba8eaa493e9c9d4bf4c05e505e8d5ed0
   package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.1

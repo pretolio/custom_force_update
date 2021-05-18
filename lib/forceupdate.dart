@@ -47,12 +47,12 @@ class CheckVersion {
     if (versionStatus == null) {
       return null;
     }
-    List storeVersion = versionStatus.storeVersion.split(".");
-    List currentVersion = versionStatus.localVersion.split(".");
-    if (storeVersion.length < currentVersion.length) {
-      int missValues = currentVersion.length - storeVersion.length;
+    List storeVersion = versionStatus?.storeVersion?.split(".");
+    List currentVersion = versionStatus?.localVersion?.split(".");
+    if ((storeVersion?.length ?? 0) < (currentVersion?.length ?? 0)) {
+      int missValues = (currentVersion?.length ?? 0) - (storeVersion?.length ?? 0);
       for (int i = 0; i < missValues; i++) {
-        storeVersion.add(0);
+        storeVersion?.add(0);
       }
     } else if (storeVersion.length > currentVersion.length) {
       int missValues = storeVersion.length - currentVersion.length;
@@ -60,13 +60,15 @@ class CheckVersion {
         currentVersion.add(0);
       }
     }
-
-    for (int i = 0; i < storeVersion.length; i++) {
-      if (int.parse(storeVersion[i]) > int.parse(currentVersion[i])) {
-        versionStatus.canUpdate = true;
-        return versionStatus;
+    if(storeVersion != null){
+      for (int i = 0; i < storeVersion?.length ?? 0; i++) {
+        if (int.parse(storeVersion[i]) > int.parse(currentVersion[i])) {
+          versionStatus.canUpdate = true;
+          return versionStatus;
+        }
       }
     }
+
     versionStatus.canUpdate = false;
     return versionStatus;
   }
@@ -89,8 +91,11 @@ class CheckVersion {
       return null;
     }
     final jsonObj = jsonDecode(response.body);
-    versionStatus.storeVersion = jsonObj['results'][0]['version'];
-    versionStatus.appStoreUrl = jsonObj['results'][0]['trackViewUrl'];
+    if(jsonObj != null && jsonObj['results'] != null && jsonObj['results'].length > 0){
+      versionStatus.storeVersion = jsonObj['results']?.first['version'];
+      versionStatus.appStoreUrl = jsonObj['results']?.first['trackViewUrl'];
+    }
+
     return versionStatus;
   }
 

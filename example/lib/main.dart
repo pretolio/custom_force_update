@@ -40,7 +40,10 @@ class _MyHomePageState extends State<MyHomePage> {
     final checkVersion = CheckVersion(context: context);
     final appStatus = await checkVersion.getVersionStatus();
     if (appStatus.canUpdate) {
-      checkVersion.showUpdateDialog("com.companyName.appName", "id0123456789");
+      checkVersion.showUpdateDialog(
+          "com.assecont.AssepontoMobile", "com.assecont.assepontoweb",
+        //"com.assecont.AssepontoMobile", "id1490469231"
+      );
     }
     print("canUpdate ${appStatus.canUpdate}");
     print("localVersion ${appStatus.localVersion}");
