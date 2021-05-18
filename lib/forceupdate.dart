@@ -148,11 +148,10 @@ class CheckVersion {
     };
     Text update = Text(updateText);
     final updateAction = () {
-
+      Platform.isIOS ? OpenAppstore.launch(androidApplicationId, iOSAppId) :
       LaunchReview.launch(
           androidAppId: androidApplicationId,
           iOSAppId: iOSAppId,
-          writeReview: !Platform.isIOS
       );
     };
     final platform = Theme.of(context).platform;
