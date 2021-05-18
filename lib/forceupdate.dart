@@ -10,6 +10,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:package_info/package_info.dart';
+import 'package:store_launcher/store_launcher.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppVersionStatus {
@@ -150,7 +151,9 @@ class CheckVersion {
     };
     Text update = Text(updateText);
     final updateAction = () {
-      Platform.isIOS ? launch(urlIos, forceSafariVC: true) :
+      Platform.isIOS ? StoreLauncher.openWithStore(iOSAppId).catchError((e) {
+        print('ERROR> $e');
+      }) :
       LaunchReview.launch(
           androidAppId: androidApplicationId,
           iOSAppId: iOSAppId,
