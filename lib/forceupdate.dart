@@ -150,7 +150,7 @@ class CheckVersion {
     };
     Text update = Text(updateText);
     final updateAction = () {
-      Platform.isIOS ? launch(urlIos) :
+      Platform.isIOS ? launch(urlIos, forceSafariVC: true) :
       LaunchReview.launch(
           androidAppId: androidApplicationId,
           iOSAppId: iOSAppId,
