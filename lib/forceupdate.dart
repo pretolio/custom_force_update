@@ -11,7 +11,6 @@ import 'package:flutter/services.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:package_info/package_info.dart';
 import 'package:store_launcher/store_launcher.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AppVersionStatus {
   bool canUpdate;
@@ -54,17 +53,17 @@ class CheckVersion {
     if ((storeVersion?.length ?? 0) < (currentVersion?.length ?? 0)) {
       int missValues = (currentVersion?.length ?? 0) - (storeVersion?.length ?? 0);
       for (int i = 0; i < missValues; i++) {
-        storeVersion?.add(0);
+        storeVersion?.add(0.toString());
       }
-    } else if (storeVersion.length > currentVersion.length) {
-      int missValues = storeVersion.length - currentVersion.length;
+    } else if (storeVersion?.length ?? 0 > currentVersion?.length ?? 0) {
+      int missValues = (storeVersion?.length ?? 0) - (currentVersion?.length ?? 0);
       for (int i = 0; i < missValues; i++) {
-        currentVersion.add(0);
+        currentVersion?.add(0.toString());
       }
     }
     if(storeVersion != null){
       for (int i = 0; i < storeVersion?.length ?? 0; i++) {
-        if (int.parse(storeVersion[i]) > int.parse(currentVersion[i])) {
+        if ((int?.tryParse(storeVersion[i]) ?? 0) > (int?.tryParse(currentVersion[i]) ?? 0)) {
           versionStatus.canUpdate = true;
           return versionStatus;
         }
