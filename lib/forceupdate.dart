@@ -48,14 +48,14 @@ class CheckVersion {
     if (versionStatus == null) {
       return null;
     }
-    List storeVersion = versionStatus?.storeVersion?.split(".");
-    List currentVersion = versionStatus?.localVersion?.split(".");
+    List<String> storeVersion = versionStatus?.storeVersion?.split(".");
+    List<String> currentVersion = versionStatus?.localVersion?.split(".");
     if ((storeVersion?.length ?? 0) < (currentVersion?.length ?? 0)) {
       int missValues = (currentVersion?.length ?? 0) - (storeVersion?.length ?? 0);
       for (int i = 0; i < missValues; i++) {
         storeVersion?.add(0.toString());
       }
-    } else if (storeVersion?.length ?? 0 > currentVersion?.length ?? 0) {
+    } else if ((storeVersion?.length ?? 0) > (currentVersion?.length ?? 0)) {
       int missValues = (storeVersion?.length ?? 0) - (currentVersion?.length ?? 0);
       for (int i = 0; i < missValues; i++) {
         currentVersion?.add(0.toString());

@@ -37,7 +37,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   checkVersion() async {
-    final checkVersion = CheckVersion(context: context);
+    final checkVersion = CheckVersion(context: context,
+        androidId: 'com.assecont.AssepontoMobile',
+        iOSId: 'com.assecont.assepontoweb'
+    );
     final appStatus = await checkVersion.getVersionStatus();
     if (appStatus.canUpdate) {
       checkVersion.showUpdateDialog(
