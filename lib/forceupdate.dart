@@ -62,10 +62,18 @@ class CheckVersion {
       }
     }
     if(storeVersion != null){
-      for (int i = 0; i < storeVersion?.length ?? 0; i++) {
-        if ((int?.tryParse(storeVersion[i]) ?? 0) > (int?.tryParse(currentVersion[i]) ?? 0)) {
+      if(int.tryParse(storeVersion.first) > int.tryParse(currentVersion.first)){
+        versionStatus.canUpdate = true;
+        return versionStatus;
+      }else if(int.tryParse(storeVersion.first) == int.tryParse(currentVersion.first)){
+        if(int.tryParse(storeVersion[1]) > int.tryParse(currentVersion[1])){
           versionStatus.canUpdate = true;
           return versionStatus;
+        }else if(int.tryParse(storeVersion[1]) == int.tryParse(currentVersion[1])){
+          if(int.tryParse(storeVersion[2]) > int.tryParse(currentVersion[2])){
+            versionStatus.canUpdate = true;
+            return versionStatus;
+          }
         }
       }
     }
