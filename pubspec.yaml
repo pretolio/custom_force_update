@@ -9,10 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.12.1
-  html: ^0.14.0+3
-  package_info: ^0.4.1
-  launch_review: ^2.0.0
+  http: ^0.13.3
+  html: ^0.15.0
+  package_info: ^2.0.2
+  launch_review: ^3.0.1
   store_launcher: ^1.0.1
 
 dev_dependencies:

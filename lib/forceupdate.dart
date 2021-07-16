@@ -94,7 +94,7 @@ class CheckVersion {
       String appId /**app id in apple store not app bundle id*/,
       AppVersionStatus versionStatus) async {
     final response =
-        await http.get('http://itunes.apple.com/lookup?bundleId=$appId');
+        await http.get(Uri.tryParse('http://itunes.apple.com/lookup?bundleId=$appId'));
     if (response.statusCode != 200) {
       print('The app with id: $appId is not found in app store');
       return null;
@@ -112,7 +112,7 @@ class CheckVersion {
       String applicationId /**application id, generally stay in build.gradle*/,
       AppVersionStatus versionStatus) async {
     final url = 'https://play.google.com/store/apps/details?id=$applicationId';
-    final response = await http.get(url);
+    final response = await http.get(Uri.tryParse(url));
     if (response.statusCode != 200) {
       print(
           'The app with application id: $applicationId is not found in play store');
@@ -189,11 +189,11 @@ class CheckVersion {
                 title: title,
                 content: content,
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
                     child: dismiss,
                     onPressed: dismissAction,
                   ),
-                  FlatButton(
+                  TextButton(
                     child: update,
                     onPressed: updateAction,
                   ),

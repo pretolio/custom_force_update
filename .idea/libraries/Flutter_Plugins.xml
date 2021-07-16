@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Flutter Plugins" type="FlutterPluginsLibraryType">
     <CLASSES>
-      <root url="file://$USER_HOME$/srv/flutter/.pub-cache/hosted/pub.dartlang.org/package_info-0.4.3" />
-      <root url="file://$USER_HOME$/srv/flutter/.pub-cache/hosted/pub.dartlang.org/launch_review-2.0.0" />
-      <root url="file://$USER_HOME$/srv/flutter/.pub-cache/hosted/pub.dartlang.org/store_launcher-1.0.1" />
+      <root url="file://$PROJECT_DIR$/../../../../srv/flutterweb/.pub-cache/hosted/pub.dartlang.org/store_launcher-1.0.1" />
+      <root url="file://$PROJECT_DIR$/../../../../srv/flutterweb/.pub-cache/hosted/pub.dartlang.org/package_info-2.0.2" />
+      <root url="file://$PROJECT_DIR$/../../../../srv/flutterweb/.pub-cache/hosted/pub.dartlang.org/launch_review-3.0.1" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
