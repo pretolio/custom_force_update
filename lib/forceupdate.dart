@@ -128,7 +128,7 @@ class CheckVersion {
     return versionStatus;
   }
 
-  void showUpdateDialog(
+  showUpdateDialog(
     String androidApplicationId,
     String iOSAppId, {
     String urlIos,
@@ -168,7 +168,7 @@ class CheckVersion {
       );
     };
     final platform = Theme.of(context).platform;
-    showDialog(
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return platform == TargetPlatform.iOS
