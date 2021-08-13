@@ -137,11 +137,12 @@ class CheckVersion {
     String titleText = 'Update Available',
     String dismissText = 'Later',
     String updateText = 'Update Now',
+    VoidCallback dismissFunc
     }) async {
     Text title = Text(titleText);
     final content = Text(message);
     Text dismiss = Text(dismissText);
-    final dismissAction = (){
+    final dismissAction = dismissFunc != null ? dismissFunc : (){
       if (Platform.isIOS) {
         try {
           exit(0);
