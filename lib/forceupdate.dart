@@ -29,7 +29,7 @@ class CheckVersion {
 
   Future<AppVersionStatus?> getVersionStatus({bool checkInBigger = true}) async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    AppVersionStatus versionStatus = AppVersionStatus(
+    AppVersionStatus? versionStatus = AppVersionStatus(
       localVersion: packageInfo.version,
     );
     switch (Theme.of(context).platform) {
