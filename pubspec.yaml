@@ -13,7 +13,7 @@ dependencies:
   html: ^0.15.0
   package_info: ^2.0.2
   launch_review: ^3.0.1
-  store_launcher: ^1.0.1
+  store_launcher: 
 
 dev_dependencies:
   flutter_test:
