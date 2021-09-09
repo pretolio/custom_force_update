@@ -127,7 +127,7 @@ class CheckVersion {
     return versionStatus;
   }
 
-  void showUpdateDialog(
+   showUpdateDialog(
     String androidApplicationId,
     String iOSAppId, {
     String? urlIos,
