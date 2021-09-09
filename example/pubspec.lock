@@ -163,13 +163,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.0"
-  store_launcher:
+  store_redirect:
     dependency: transitive
     description:
-      name: store_launcher
+      name: store_redirect
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "2.0.0"
   stream_channel:
     dependency: transitive
     description:

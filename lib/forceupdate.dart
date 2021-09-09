@@ -10,7 +10,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:package_info/package_info.dart';
-import 'package:store_launcher/store_launcher.dart';
+import 'package:store_redirect/store_redirect.dart';
 
 class AppVersionStatus {
   bool canUpdate;
@@ -159,7 +159,8 @@ class CheckVersion {
     };
     Text update = Text(updateText);
     final updateAction = () {
-      Platform.isIOS ? StoreLauncher.openWithStore(iOSAppId).catchError((e) {
+      Platform.isIOS ? StoreRedirect.redirect(
+        iOSAppId: iOSAppId, androidAppId: androidApplicationId,).catchError((e) {
         print('ERROR> $e');
       }) :
       LaunchReview.launch(
