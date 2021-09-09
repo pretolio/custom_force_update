@@ -168,7 +168,7 @@ class CheckVersion {
       );
     };
     final platform = Theme.of(context).platform;
-    showDialog(
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return platform == TargetPlatform.iOS
