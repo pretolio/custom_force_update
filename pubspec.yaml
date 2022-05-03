@@ -9,11 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.12.1
-  html: ^0.14.0+3
-  package_info: ^0.4.1
-  launch_review: ^2.0.0
-  store_launcher: ^1.0.1
+  http: any
+  html: any
+  package_info: any
+  launch_review: any
+  store_launcher: any
 
 dev_dependencies:
   flutter_test:
