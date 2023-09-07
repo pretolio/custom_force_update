@@ -113,49 +113,54 @@ class CheckVersion {
   Future<AppVersionStatus> getAndroidAtStoreVersion(
       String applicationId /**application id, generally stay in build.gradle*/,
       AppVersionStatus versionStatus) async {
-    AppUpdateInfo update = await InAppUpdate.checkForUpdate();
-
-    versionStatus.canUpdate = update.updateAvailability == UpdateAvailability.updateAvailable;
-
+    versionStatus.canUpdate = false;
     try {
-      final url = 'https://play.google.com/store/apps/details?id=$applicationId';
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode != 200) {
-        print(
-            'The app with application id: $applicationId is not found in play store');
+      AppUpdateInfo update = await InAppUpdate.checkForUpdate();
+
+      versionStatus.canUpdate = update.updateAvailability == UpdateAvailability.updateAvailable;
+
+      try {
+        final url = 'https://play.google.com/store/apps/details?id=$applicationId';
+        final response = await http.get(Uri.parse(url));
+        if (response.statusCode != 200) {
+          print(
+              'The app with application id: $applicationId is not found in play store');
+        }
+        versionStatus.appStoreUrl = url;
+
+        final document = html.parse(response.body);
+        final additionalInfoElements = document.getElementsByClassName('hAyfc');
+
+        if (additionalInfoElements.isNotEmpty) {
+          final versionElement = additionalInfoElements.firstWhere(
+                (elm) => elm.querySelector('.BgcNfc')!.text == 'Current Version',
+          );
+          versionStatus.storeVersion = versionElement.querySelector('.htlgb')!.text;
+
+        } else {
+          final scriptElements = document.getElementsByTagName('script');
+          final infoScriptElement = scriptElements.firstWhere(
+                (elm) => elm.text.contains('key: \'ds:4\''),
+          );
+          final param = infoScriptElement.text
+              .substring(20, infoScriptElement.text.length - 2)
+              .replaceAll('key:', '"key":')
+              .replaceAll('hash:', '"hash":')
+              .replaceAll('data:', '"data":')
+              .replaceAll('sideChannel:', '"sideChannel":')
+              .replaceAll('\'', '"')
+              .replaceAll('owners\"', 'owners');
+          final parsed = json.decode(param);
+          print(parsed['data']);
+          final data = parsed['data'];
+
+          versionStatus.storeVersion = data[1][2][140][0][0][0];
+        }
+      } catch (e) {
+        debugPrint(e.toString());
       }
-      versionStatus.appStoreUrl = url;
-
-      final document = html.parse(response.body);
-      final additionalInfoElements = document.getElementsByClassName('hAyfc');
-
-      if (additionalInfoElements.isNotEmpty) {
-        final versionElement = additionalInfoElements.firstWhere(
-              (elm) => elm.querySelector('.BgcNfc')!.text == 'Current Version',
-        );
-        versionStatus.storeVersion = versionElement.querySelector('.htlgb')!.text;
-
-      } else {
-        final scriptElements = document.getElementsByTagName('script');
-        final infoScriptElement = scriptElements.firstWhere(
-              (elm) => elm.text.contains('key: \'ds:4\''),
-        );
-        final param = infoScriptElement.text
-            .substring(20, infoScriptElement.text.length - 2)
-            .replaceAll('key:', '"key":')
-            .replaceAll('hash:', '"hash":')
-            .replaceAll('data:', '"data":')
-            .replaceAll('sideChannel:', '"sideChannel":')
-            .replaceAll('\'', '"')
-            .replaceAll('owners\"', 'owners');
-        final parsed = json.decode(param);
-        print(parsed['data']);
-        final data = parsed['data'];
-
-        versionStatus.storeVersion = data[1][2][140][0][0][0];
-      }
-    } catch (e) {
-      debugPrint(e.toString());
+    } on Exception catch (e) {
+      // TODO
     }
     return versionStatus;
   }
@@ -222,8 +227,7 @@ class CheckVersion {
                 onPressed: updateAction,
               ),
             ],
-          )
-              : AlertDialog(
+          ) : AlertDialog(
             title: title,
             content: content,
             actions: <Widget>[
