@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:package_info/package_info.dart';
 import 'package:store_launcher_nullsafe/store_launcher_nullsafe.dart';
@@ -38,6 +39,35 @@ class CheckVersion {
       case TargetPlatform.iOS:
         final id = iOSId ?? packageInfo.packageName;
         versionStatus = await getiOSAtStoreVersion(id, versionStatus);
+        if (versionStatus == null) return null;
+
+        List<String> storeVersion = versionStatus.storeVersion?.split(".") ?? [];
+        List<String> currentVersion = versionStatus.localVersion?.split(".") ?? [];
+        if ((storeVersion.length) < (currentVersion.length )) {
+          int missValues = (currentVersion.length) - (storeVersion.length );
+          for (int i = 0; i < missValues; i++) {
+            storeVersion.add(0.toString());
+          }
+        } else if ((storeVersion.length ) > (currentVersion.length )) {
+          int missValues = (storeVersion.length ) - (currentVersion.length );
+          for (int i = 0; i < missValues; i++) {
+            currentVersion.add(0.toString());
+          }
+        }
+        if((int.tryParse(storeVersion.first) ?? 0) > (int.tryParse(currentVersion.first) ?? 0)){
+          versionStatus.canUpdate = true;
+          return versionStatus;
+        }else if(int.tryParse(storeVersion.first) == int.tryParse(currentVersion.first)){
+          if((int.tryParse(storeVersion[1]) ?? 0) > (int.tryParse(currentVersion[1]) ?? 0)){
+            versionStatus.canUpdate = true;
+            return versionStatus;
+          }else if(int.tryParse(storeVersion[1]) == int.tryParse(currentVersion[1])){
+            if((int.tryParse(storeVersion[2]) ?? 0) > (int.tryParse(currentVersion[2]) ?? 0)){
+              versionStatus.canUpdate = true;
+              return versionStatus;
+            }
+          }
+        }
         break;
       case TargetPlatform.android:
         final id = androidId ?? packageInfo.packageName;
@@ -46,38 +76,7 @@ class CheckVersion {
       default:
         print("This platform is not yet supported by this package.");
     }
-    if (versionStatus == null) {
-      return null;
-    }
-    List<String> storeVersion = versionStatus.storeVersion?.split(".") ?? [];
-    List<String> currentVersion = versionStatus.localVersion?.split(".") ?? [];
-    if ((storeVersion.length) < (currentVersion.length )) {
-      int missValues = (currentVersion.length) - (storeVersion.length );
-      for (int i = 0; i < missValues; i++) {
-        storeVersion.add(0.toString());
-      }
-    } else if ((storeVersion.length ) > (currentVersion.length )) {
-      int missValues = (storeVersion.length ) - (currentVersion.length );
-      for (int i = 0; i < missValues; i++) {
-        currentVersion.add(0.toString());
-      }
-    }
-    if((int.tryParse(storeVersion.first) ?? 0) > (int.tryParse(currentVersion.first) ?? 0)){
-      versionStatus.canUpdate = true;
-      return versionStatus;
-    }else if(int.tryParse(storeVersion.first) == int.tryParse(currentVersion.first)){
-      if((int.tryParse(storeVersion[1]) ?? 0) > (int.tryParse(currentVersion[1]) ?? 0)){
-        versionStatus.canUpdate = true;
-        return versionStatus;
-      }else if(int.tryParse(storeVersion[1]) == int.tryParse(currentVersion[1])){
-        if((int.tryParse(storeVersion[2]) ?? 0) > (int.tryParse(currentVersion[2]) ?? 0)){
-          versionStatus.canUpdate = true;
-          return versionStatus;
-        }
-      }
-    }
 
-    versionStatus.canUpdate = false;
     return versionStatus;
   }
 
@@ -111,29 +110,54 @@ class CheckVersion {
     return null;
   }
 
-  Future<AppVersionStatus?> getAndroidAtStoreVersion(
+  Future<AppVersionStatus> getAndroidAtStoreVersion(
       String applicationId /**application id, generally stay in build.gradle*/,
       AppVersionStatus versionStatus) async {
+    AppUpdateInfo update = await InAppUpdate.checkForUpdate();
+
+    versionStatus.canUpdate = update.updateAvailability == UpdateAvailability.updateAvailable;
+
     try {
       final url = 'https://play.google.com/store/apps/details?id=$applicationId';
       final response = await http.get(Uri.parse(url));
       if (response.statusCode != 200) {
         print(
             'The app with application id: $applicationId is not found in play store');
-        return null;
       }
-      final document = html.parse(response.body);
-      final elements = document.getElementsByClassName('hAyfc');
-      final versionElement = elements.firstWhere(
-        (elm) => elm.querySelector('.BgcNfc')?.text == 'Current Version',
-      );
-      versionStatus.storeVersion = versionElement.querySelector('.htlgb')?.text;
       versionStatus.appStoreUrl = url;
-      return versionStatus;
+
+      final document = html.parse(response.body);
+      final additionalInfoElements = document.getElementsByClassName('hAyfc');
+
+      if (additionalInfoElements.isNotEmpty) {
+        final versionElement = additionalInfoElements.firstWhere(
+              (elm) => elm.querySelector('.BgcNfc')!.text == 'Current Version',
+        );
+        versionStatus.storeVersion = versionElement.querySelector('.htlgb')!.text;
+
+      } else {
+        final scriptElements = document.getElementsByTagName('script');
+        final infoScriptElement = scriptElements.firstWhere(
+              (elm) => elm.text.contains('key: \'ds:4\''),
+        );
+        final param = infoScriptElement.text
+            .substring(20, infoScriptElement.text.length - 2)
+            .replaceAll('key:', '"key":')
+            .replaceAll('hash:', '"hash":')
+            .replaceAll('data:', '"data":')
+            .replaceAll('sideChannel:', '"sideChannel":')
+            .replaceAll('\'', '"')
+            .replaceAll('owners\"', 'owners');
+        final parsed = json.decode(param);
+        print(parsed['data']);
+        final data = parsed['data'];
+
+        versionStatus.storeVersion = data[1][2][140][0][0][0];
+      }
     } catch (e) {
       debugPrint(e.toString());
     }
-    return null;
+    return versionStatus;
   }
 
   showUpdateDialog(
@@ -147,69 +171,75 @@ class CheckVersion {
     String updateText = 'Update Now',
     VoidCallback? dismissFunc
     }) async {
-    Text title = Text(titleText);
-    final content = Text(message);
-    Text dismiss = Text(dismissText);
-    final dismissAction = dismissFunc != null ? dismissFunc : (){
-      if (Platform.isIOS) {
-        try {
-          exit(0);
-        } catch (e) {
-          SystemNavigator.pop(); // for IOS, not true this, you can make comment this :)
+    if(Platform.isAndroid){
+      InAppUpdate.performImmediateUpdate().catchError((e) {
+        return AppUpdateResult.inAppUpdateFailed;
+      });
+    }else{
+      Text title = Text(titleText);
+      final content = Text(message);
+      Text dismiss = Text(dismissText);
+      final dismissAction = dismissFunc != null ? dismissFunc : (){
+        if (Platform.isIOS) {
+          try {
+            exit(0);
+          } catch (e) {
+            SystemNavigator.pop(); // for IOS, not true this, you can make comment this :)
+          }
+        } else {
+          try {
+            SystemNavigator.pop(); // sometimes it cant exit app
+          } catch (e) {
+            exit(0); // so i am giving crash to app ... sad :(
+          }
         }
-      } else {
-        try {
-          SystemNavigator.pop(); // sometimes it cant exit app
-        } catch (e) {
-          exit(0); // so i am giving crash to app ... sad :(
-        }
-      }
-    };
-    Text update = Text(updateText);
-    final updateAction = () {
-      Platform.isIOS ? StoreLauncher.openWithStore(iOSAppId).catchError((e) {
-        print('ERROR> $e');
-      }) :
-      LaunchReview.launch(
+      };
+      Text update = Text(updateText);
+      final updateAction = () {
+        Platform.isIOS ? StoreLauncher.openWithStore(iOSAppId).catchError((e) {
+          print('ERROR> $e');
+        }) :
+        LaunchReview.launch(
           androidAppId: androidApplicationId,
           iOSAppId: iOSAppId,
+        );
+      };
+      final platform = Theme.of(context).platform;
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return platform == TargetPlatform.iOS
+              ? CupertinoAlertDialog(
+            title: title,
+            content: content,
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: dismiss,
+                onPressed: dismissAction,
+              ),
+              CupertinoDialogAction(
+                child: update,
+                onPressed: updateAction,
+              ),
+            ],
+          )
+              : AlertDialog(
+            title: title,
+            content: content,
+            actions: <Widget>[
+              TextButton(
+                child: dismiss,
+                onPressed: dismissAction,
+              ),
+              TextButton(
+                child: update,
+                onPressed: updateAction,
+              ),
+            ],
+          );
+        },
       );
-    };
-    final platform = Theme.of(context).platform;
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return platform == TargetPlatform.iOS
-            ? CupertinoAlertDialog(
-                title: title,
-                content: content,
-                actions: <Widget>[
-                  CupertinoDialogAction(
-                    child: dismiss,
-                    onPressed: dismissAction,
-                  ),
-                  CupertinoDialogAction(
-                    child: update,
-                    onPressed: updateAction,
-                  ),
-                ],
-              )
-            : AlertDialog(
-                title: title,
-                content: content,
-                actions: <Widget>[
-                  TextButton(
-                    child: dismiss,
-                    onPressed: dismissAction,
-                  ),
-                  TextButton(
-                    child: update,
-                    onPressed: updateAction,
-                  ),
-                ],
-              );
-      },
-    );
+    }
   }
 }
 
