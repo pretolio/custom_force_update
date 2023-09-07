@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -38,20 +38,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   checkVersion() async {
     final checkVersion = CheckVersion(context: context,
-        androidId: 'com.assecont.AssepontoMobile',
-        iOSId: 'com.assecont.assepontoweb'
+        androidId: 'com.dicadehoje',
+        iOSId: 'com.dicadehoje.std'
     );
     final appStatus = await checkVersion.getVersionStatus();
-    if (appStatus.canUpdate) {
+    if (appStatus?.canUpdate ?? false) {
       checkVersion.showUpdateDialog(
-          "com.assecont.AssepontoMobile", "com.assecont.assepontoweb",
+        "com.dicadehoje", "1589310404",
         //"com.assecont.AssepontoMobile", "id1490469231"
       );
     }
-    print("canUpdate ${appStatus.canUpdate}");
-    print("localVersion ${appStatus.localVersion}");
-    print("appStoreLink ${appStatus.appStoreUrl}");
-    print("storeVersion ${appStatus.storeVersion}");
+    print("canUpdate ${appStatus?.canUpdate}");
+    print("localVersion ${appStatus?.localVersion}");
+    print("appStoreLink ${appStatus?.appStoreUrl}");
+    print("storeVersion ${appStatus?.storeVersion}");
   }
 
   void _incrementCounter() {

@@ -1,4 +1,4 @@
-package com.bronx.membership.davane
+package com.bronx.membership
 
 import io.flutter.embedding.android.FlutterActivity
 

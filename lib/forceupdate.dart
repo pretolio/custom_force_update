@@ -10,27 +10,28 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:package_info/package_info.dart';
-import 'package:store_launcher/store_launcher.dart';
+import 'package:store_launcher_nullsafe/store_launcher_nullsafe.dart';
+
+
 
 class AppVersionStatus {
-  bool canUpdate;
-  String localVersion;
-  String storeVersion;
-  String appStoreUrl;
+  bool? canUpdate;
+  String? localVersion;
+  String? storeVersion;
+  String? appStoreUrl;
   AppVersionStatus({this.canUpdate, this.localVersion, this.storeVersion});
 }
 
 class CheckVersion {
   BuildContext context;
-  String androidId;
-  String iOSId;
+  String? androidId;
+  String? iOSId;
 
-  CheckVersion({this.androidId, this.iOSId, @required this.context})
-      : assert(context != null);
+  CheckVersion({this.androidId, this.iOSId, required this.context});
 
-  Future<AppVersionStatus> getVersionStatus({bool checkInBigger = true}) async {
+  Future<AppVersionStatus?> getVersionStatus({bool checkInBigger = true}) async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    AppVersionStatus versionStatus = AppVersionStatus(
+    AppVersionStatus? versionStatus = AppVersionStatus(
       localVersion: packageInfo.version,
     );
     switch (Theme.of(context).platform) {
@@ -48,32 +49,30 @@ class CheckVersion {
     if (versionStatus == null) {
       return null;
     }
-    List<String> storeVersion = versionStatus?.storeVersion?.split(".");
-    List<String> currentVersion = versionStatus?.localVersion?.split(".");
-    if ((storeVersion?.length ?? 0) < (currentVersion?.length ?? 0)) {
-      int missValues = (currentVersion?.length ?? 0) - (storeVersion?.length ?? 0);
+    List<String> storeVersion = versionStatus.storeVersion?.split(".") ?? [];
+    List<String> currentVersion = versionStatus.localVersion?.split(".") ?? [];
+    if ((storeVersion.length) < (currentVersion.length )) {
+      int missValues = (currentVersion.length) - (storeVersion.length );
       for (int i = 0; i < missValues; i++) {
-        storeVersion?.add(0.toString());
+        storeVersion.add(0.toString());
       }
-    } else if ((storeVersion?.length ?? 0) > (currentVersion?.length ?? 0)) {
-      int missValues = (storeVersion?.length ?? 0) - (currentVersion?.length ?? 0);
+    } else if ((storeVersion.length ) > (currentVersion.length )) {
+      int missValues = (storeVersion.length ) - (currentVersion.length );
       for (int i = 0; i < missValues; i++) {
-        currentVersion?.add(0.toString());
+        currentVersion.add(0.toString());
       }
     }
-    if(storeVersion != null){
-      if(int.tryParse(storeVersion.first) > int.tryParse(currentVersion.first)){
+    if((int.tryParse(storeVersion.first) ?? 0) > (int.tryParse(currentVersion.first) ?? 0)){
+      versionStatus.canUpdate = true;
+      return versionStatus;
+    }else if(int.tryParse(storeVersion.first) == int.tryParse(currentVersion.first)){
+      if((int.tryParse(storeVersion[1]) ?? 0) > (int.tryParse(currentVersion[1]) ?? 0)){
         versionStatus.canUpdate = true;
         return versionStatus;
-      }else if(int.tryParse(storeVersion.first) == int.tryParse(currentVersion.first)){
-        if(int.tryParse(storeVersion[1]) > int.tryParse(currentVersion[1])){
+      }else if(int.tryParse(storeVersion[1]) == int.tryParse(currentVersion[1])){
+        if((int.tryParse(storeVersion[2]) ?? 0) > (int.tryParse(currentVersion[2]) ?? 0)){
           versionStatus.canUpdate = true;
           return versionStatus;
-        }else if(int.tryParse(storeVersion[1]) == int.tryParse(currentVersion[1])){
-          if(int.tryParse(storeVersion[2]) > int.tryParse(currentVersion[2])){
-            versionStatus.canUpdate = true;
-            return versionStatus;
-          }
         }
       }
     }
@@ -83,61 +82,70 @@ class CheckVersion {
   }
 
   alertIfAvailable(String androidApplicationId, String iOSAppId) async {
-    AppVersionStatus versionStatus = await getVersionStatus();
-    if (versionStatus != null && versionStatus.canUpdate) {
+    AppVersionStatus? versionStatus = await getVersionStatus();
+    if (versionStatus?.canUpdate ?? false) {
       showUpdateDialog(androidApplicationId, iOSAppId,
-          versionStatus: versionStatus);
+          versionStatus: versionStatus!);
     }
   }
 
-  getiOSAtStoreVersion(
+  Future<AppVersionStatus?> getiOSAtStoreVersion(
       String appId /**app id in apple store not app bundle id*/,
       AppVersionStatus versionStatus) async {
-    final response =
-        await http.get('http://itunes.apple.com/lookup?bundleId=$appId');
-    if (response.statusCode != 200) {
-      print('The app with id: $appId is not found in app store');
-      return null;
+    try {
+      final response =
+          await http.get(Uri.parse('http://itunes.apple.com/lookup?bundleId=$appId'));
+      if (response.statusCode == 200) {
+        final jsonObj = jsonDecode(response.body);
+        if(jsonObj != null && jsonObj['results'] != null && jsonObj['results'].length > 0){
+          versionStatus.storeVersion = jsonObj['results']?.first['version'];
+          versionStatus.appStoreUrl = jsonObj['results']?.first['trackViewUrl'];
+          return versionStatus;
+        }
+      }else{
+        print('The app with id: $appId is not found in app store');
+      }
+    } on Exception catch (e) {
+      print(e.toString());
     }
-    final jsonObj = jsonDecode(response.body);
-    if(jsonObj != null && jsonObj['results'] != null && jsonObj['results'].length > 0){
-      versionStatus.storeVersion = jsonObj['results']?.first['version'];
-      versionStatus.appStoreUrl = jsonObj['results']?.first['trackViewUrl'];
-    }
-
-    return versionStatus;
+    return null;
   }
 
-  getAndroidAtStoreVersion(
+  Future<AppVersionStatus?> getAndroidAtStoreVersion(
       String applicationId /**application id, generally stay in build.gradle*/,
       AppVersionStatus versionStatus) async {
-    final url = 'https://play.google.com/store/apps/details?id=$applicationId';
-    final response = await http.get(url);
-    if (response.statusCode != 200) {
-      print(
-          'The app with application id: $applicationId is not found in play store');
-      return null;
+    try {
+      final url = 'https://play.google.com/store/apps/details?id=$applicationId';
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode != 200) {
+        print(
+            'The app with application id: $applicationId is not found in play store');
+        return null;
+      }
+      final document = html.parse(response.body);
+      final elements = document.getElementsByClassName('hAyfc');
+      final versionElement = elements.firstWhere(
+        (elm) => elm.querySelector('.BgcNfc')?.text == 'Current Version',
+      );
+      versionStatus.storeVersion = versionElement.querySelector('.htlgb')?.text;
+      versionStatus.appStoreUrl = url;
+      return versionStatus;
+    } catch (e) {
+      debugPrint(e.toString());
     }
-    final document = html.parse(response.body);
-    final elements = document.getElementsByClassName('hAyfc');
-    final versionElement = elements.firstWhere(
-      (elm) => elm.querySelector('.BgcNfc').text == 'Current Version',
-    );
-    versionStatus.storeVersion = versionElement.querySelector('.htlgb').text;
-    versionStatus.appStoreUrl = url;
-    return versionStatus;
+    return null;
   }
 
   showUpdateDialog(
     String androidApplicationId,
     String iOSAppId, {
-    String urlIos,
-    AppVersionStatus versionStatus,
+    String? urlIos,
+    AppVersionStatus? versionStatus,
     String message = "You can now update this app from store.",
     String titleText = 'Update Available',
     String dismissText = 'Later',
     String updateText = 'Update Now',
-    VoidCallback dismissFunc
+    VoidCallback? dismissFunc
     }) async {
     Text title = Text(titleText);
     final content = Text(message);
@@ -190,11 +198,11 @@ class CheckVersion {
                 title: title,
                 content: content,
                 actions: <Widget>[
-                  FlatButton(
+                  TextButton(
                     child: dismiss,
                     onPressed: dismissAction,
                   ),
-                  FlatButton(
+                  TextButton(
                     child: update,
                     onPressed: updateAction,
                   ),
