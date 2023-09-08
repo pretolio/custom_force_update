@@ -118,7 +118,7 @@ class CheckVersion {
       AppUpdateInfo update = await InAppUpdate.checkForUpdate();
 
       versionStatus.canUpdate = update.updateAvailability == UpdateAvailability.updateAvailable;
-
+      print(update.updateAvailability);
       try {
         final url = 'https://play.google.com/store/apps/details?id=$applicationId';
         final response = await http.get(Uri.parse(url));
@@ -160,7 +160,7 @@ class CheckVersion {
         debugPrint(e.toString());
       }
     } on Exception catch (e) {
-      // TODO
+      print(e.toString());
     }
     return versionStatus;
   }
