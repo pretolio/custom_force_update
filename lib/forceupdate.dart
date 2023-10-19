@@ -74,7 +74,7 @@ class CheckVersion {
         versionStatus = await getAndroidAtStoreVersion(id, versionStatus);
         break;
       default:
-        print("This platform is not yet supported by this package.");
+        debugPrint("This platform is not yet supported by this package.");
     }
 
     return versionStatus;
@@ -102,10 +102,10 @@ class CheckVersion {
           return versionStatus;
         }
       }else{
-        print('The app with id: $appId is not found in app store');
+        debugPrint('The app with id: $appId is not found in app store');
       }
-    } on Exception catch (e) {
-      print(e.toString());
+    } catch (e) {
+      debugPrint(e.toString());
     }
     return null;
   }
@@ -118,12 +118,12 @@ class CheckVersion {
       AppUpdateInfo update = await InAppUpdate.checkForUpdate();
 
       versionStatus.canUpdate = update.updateAvailability == UpdateAvailability.updateAvailable;
-      print(update.updateAvailability);
+
       try {
         final url = 'https://play.google.com/store/apps/details?id=$applicationId';
         final response = await http.get(Uri.parse(url));
         if (response.statusCode != 200) {
-          print(
+          debugPrint(
               'The app with application id: $applicationId is not found in play store');
         }
         versionStatus.appStoreUrl = url;
@@ -151,16 +151,16 @@ class CheckVersion {
               .replaceAll('\'', '"')
               .replaceAll('owners\"', 'owners');
           final parsed = json.decode(param);
-          print(parsed['data']);
+
           final data = parsed['data'];
 
           versionStatus.storeVersion = data[1][2][140][0][0][0];
         }
       } catch (e) {
-        debugPrint(e.toString());
+
       }
-    } on Exception catch (e) {
-      print(e.toString());
+    } catch (e) {
+      debugPrint(e.toString());
     }
     return versionStatus;
   }
@@ -202,7 +202,7 @@ class CheckVersion {
       Text update = Text(updateText);
       final updateAction = () {
         Platform.isIOS ? StoreLauncher.openWithStore(iOSAppId).catchError((e) {
-          print('ERROR> $e');
+          debugPrint('---------ERROR> $e');
         }) :
         LaunchReview.launch(
           androidAppId: androidApplicationId,
