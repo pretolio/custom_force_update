@@ -1,18 +1,19 @@
 library forceupdate;
 
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as html;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart';
+
 import 'package:in_app_update/in_app_update.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:package_info/package_info.dart';
 import 'package:store_launcher_nullsafe/store_launcher_nullsafe.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:html/parser.dart' as html;
 
 
 class AppVersionStatus {
@@ -177,9 +178,13 @@ class CheckVersion {
     VoidCallback? dismissFunc
     }) async {
     if(Platform.isAndroid){
-      InAppUpdate.performImmediateUpdate().catchError((e) {
-        return AppUpdateResult.inAppUpdateFailed;
-      });
+      try {
+        await InAppUpdate.performImmediateUpdate().catchError((e) {
+          return AppUpdateResult.inAppUpdateFailed;
+        });
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     }else{
       Text title = Text(titleText);
       final content = Text(message);
