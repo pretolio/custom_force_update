@@ -10,10 +10,10 @@ import 'package:flutter/services.dart';
 
 import 'package:in_app_update/in_app_update.dart';
 import 'package:launch_review/launch_review.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
 import 'package:store_launcher_nullsafe/store_launcher_nullsafe.dart';
 import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as html;
 
 
 class AppVersionStatus {
@@ -119,47 +119,6 @@ class CheckVersion {
       AppUpdateInfo update = await InAppUpdate.checkForUpdate();
 
       versionStatus.canUpdate = update.updateAvailability == UpdateAvailability.updateAvailable;
-
-      try {
-        final url = 'https://play.google.com/store/apps/details?id=$applicationId';
-        final response = await http.get(Uri.parse(url));
-        if (response.statusCode != 200) {
-          debugPrint(
-              'The app with application id: $applicationId is not found in play store');
-        }
-        versionStatus.appStoreUrl = url;
-
-        final document = html.parse(response.body);
-        final additionalInfoElements = document.getElementsByClassName('hAyfc');
-
-        if (additionalInfoElements.isNotEmpty) {
-          final versionElement = additionalInfoElements.firstWhere(
-                (elm) => elm.querySelector('.BgcNfc')!.text == 'Current Version',
-          );
-          versionStatus.storeVersion = versionElement.querySelector('.htlgb')!.text;
-
-        } else {
-          final scriptElements = document.getElementsByTagName('script');
-          final infoScriptElement = scriptElements.firstWhere(
-                (elm) => elm.text.contains('key: \'ds:4\''),
-          );
-          final param = infoScriptElement.text
-              .substring(20, infoScriptElement.text.length - 2)
-              .replaceAll('key:', '"key":')
-              .replaceAll('hash:', '"hash":')
-              .replaceAll('data:', '"data":')
-              .replaceAll('sideChannel:', '"sideChannel":')
-              .replaceAll('\'', '"')
-              .replaceAll('owners\"', 'owners');
-          final parsed = json.decode(param);
-
-          final data = parsed['data'];
-
-          versionStatus.storeVersion = data[1][2][140][0][0][0];
-        }
-      } catch (e) {
-
-      }
     } catch (e) {
       debugPrint(e.toString());
     }

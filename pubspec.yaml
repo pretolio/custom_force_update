@@ -10,11 +10,11 @@ dependencies:
   flutter:
     sdk: flutter
   http: any
-  html: any
-  package_info: any
-  launch_review: any
-  store_launcher_nullsafe: any
-  in_app_update: any
+
+  package_info_plus: ^3.1.2
+  launch_review: ^3.0.1
+  store_launcher_nullsafe: 1.0.0
+  in_app_update: ^3.0.0
 
 dev_dependencies:
   flutter_test:
