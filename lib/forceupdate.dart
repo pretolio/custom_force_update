@@ -9,7 +9,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 import 'package:in_app_update/in_app_update.dart';
-import 'package:launch_review/launch_review.dart';
+import 'package:launch_app_store/launch_app_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:store_launcher_nullsafe/store_launcher_nullsafe.dart';
@@ -171,6 +171,7 @@ class CheckVersion {
         LaunchReview.launch(
           androidAppId: androidApplicationId,
           iOSAppId: iOSAppId,
+          writeReview: true
         );
       };
       final platform = Theme.of(context).platform;
