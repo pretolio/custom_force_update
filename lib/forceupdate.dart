@@ -120,7 +120,7 @@ class CheckVersion {
 
       versionStatus.canUpdate = update.updateAvailability == UpdateAvailability.updateAvailable;
     } catch (e) {
-      debugPrint(e.toString());
+      //debugPrint(e.toString());
     }
     return versionStatus;
   }
