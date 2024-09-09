@@ -12,7 +12,6 @@ import 'package:in_app_update/in_app_update.dart';
 import 'package:launch_app_store/launch_app_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:store_launcher_nullsafe/store_launcher_nullsafe.dart';
 import 'package:http/http.dart' as http;
 
 
@@ -165,13 +164,13 @@ class CheckVersion {
       };
       Text update = Text(updateText);
       final updateAction = () {
-        Platform.isIOS ? StoreLauncher.openWithStore(iOSAppId).catchError((e) {
+        /*Platform.isIOS ? StoreLauncher.openWithStore(iOSAppId).catchError((e) {
           debugPrint('---------ERROR> $e');
-        }) :
+        }) :*/
         LaunchReview.launch(
           androidAppId: androidApplicationId,
           iOSAppId: iOSAppId,
-          writeReview: true
+          writeReview: false
         );
       };
       final platform = Theme.of(context).platform;
