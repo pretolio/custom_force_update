@@ -11,8 +11,8 @@ dependencies:
     sdk: flutter
   http: any
 
-  package_info_plus: ^8.0.2
-  launch_app_store: ^1.1.2
+  package_info_plus: any
+  launch_app_store: any
   in_app_update: ^4.2.3
 
 dev_dependencies:
