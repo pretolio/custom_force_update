@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
   http: any
 
-  package_info_plus: any
+  device_info_plus: 10.1.1
   launch_app_store: any
   in_app_update: ^4.2.3
 

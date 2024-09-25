@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 
 import 'package:in_app_update/in_app_update.dart';
 import 'package:launch_app_store/launch_app_store.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -31,13 +31,22 @@ class CheckVersion {
   CheckVersion({this.androidId, this.iOSId, required this.context});
 
   Future<AppVersionStatus?> getVersionStatus({bool checkInBigger = true}) async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final device = DeviceInfoPlugin();
+    String versao;
+    if(Platform.isIOS){
+      final ios = await device.iosInfo;
+      versao = ios.systemVersion;
+    }else{
+      final ios = await device.androidInfo;
+      versao = ios.version.release;
+    }
+
     AppVersionStatus? versionStatus = AppVersionStatus(
-      localVersion: packageInfo.version,
+      localVersion: versao,
     );
     switch (Theme.of(context).platform) {
       case TargetPlatform.iOS:
-        final id = iOSId ?? packageInfo.packageName;
+        final id = iOSId ?? '';
         versionStatus = await getiOSAtStoreVersion(id, versionStatus);
         if (versionStatus == null) return null;
 
@@ -70,7 +79,7 @@ class CheckVersion {
         }
         break;
       case TargetPlatform.android:
-        final id = androidId ?? packageInfo.packageName;
+        final id = androidId ?? '';
         versionStatus = await getAndroidAtStoreVersion(id, versionStatus);
         break;
       default:
