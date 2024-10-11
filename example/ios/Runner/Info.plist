@@ -42,10 +42,15 @@
 
 	<key>LSApplicationQueriesSchemes</key>
     <array>
+      <string>itms-apps</string>
       <string>https</string>
       <string>http</string>
       <string>itms-beta</string>
       <string>itms</string>
     </array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 </dict>
 </plist>

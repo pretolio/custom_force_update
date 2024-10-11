@@ -171,8 +171,9 @@ class CheckVersion {
         LaunchReview.launch(
           androidAppId: androidApplicationId,
           iOSAppId: iOSAppId,
-          writeReview: false
         );
+
+
       };
       final platform = Theme.of(context).platform;
       await showDialog(
