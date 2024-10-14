@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:in_app_review/in_app_review.dart';
 
 import 'package:in_app_update/in_app_update.dart';
 import 'package:launch_app_store/launch_app_store.dart';
@@ -171,9 +172,11 @@ class CheckVersion {
         LaunchReview.launch(
           androidAppId: androidApplicationId,
           iOSAppId: iOSAppId,
-        );
+        ).timeout(Duration(seconds: 3), onTimeout: (){
+          final InAppReview inAppReview = InAppReview.instance;
 
-
+          inAppReview.openStoreListing(appStoreId:  androidApplicationId);
+        });
       };
       final platform = Theme.of(context).platform;
       await showDialog(
