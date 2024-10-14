@@ -1,27 +1,33 @@
 PODS:
   - Flutter (1.0.0)
-  - launch_app_store (0.0.3):
+  - in_app_review (0.2.0):
     - Flutter
   - package_info_plus (0.4.5):
+    - Flutter
+  - url_launcher_ios (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - launch_app_store (from `.symlinks/plugins/launch_app_store/ios`)
+  - in_app_review (from `.symlinks/plugins/in_app_review/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  launch_app_store:
-    :path: ".symlinks/plugins/launch_app_store/ios"
+  in_app_review:
+    :path: ".symlinks/plugins/in_app_review/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
+  url_launcher_ios:
+    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  launch_app_store: 9ccd81c07a1f6092e8282f0de34330a66c56b1c9
+  in_app_review: 318597b3a06c22bb46dc454d56828c85f444f99d
   package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
+  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 
 PODFILE CHECKSUM: c4c93c5f6502fe2754f48404d3594bf779584011
 

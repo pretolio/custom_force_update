@@ -7,13 +7,13 @@ import 'package:flutter/cupertino.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:in_app_review/in_app_review.dart';
+
 
 import 'package:in_app_update/in_app_update.dart';
-import 'package:launch_app_store/launch_app_store.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:store_launcher_plus/store_launcher_plus.dart';
 
 
 class AppVersionStatus {
@@ -165,18 +165,24 @@ class CheckVersion {
         }
       };
       Text update = Text(updateText);
-      final updateAction = () {
-        /*Platform.isIOS ? StoreLauncher.openWithStore(iOSAppId).catchError((e) {
-          debugPrint('---------ERROR> $e');
-        }) :*/
-        LaunchReview.launch(
-          androidAppId: androidApplicationId,
-          iOSAppId: iOSAppId,
-        ).timeout(Duration(seconds: 3), onTimeout: (){
+      final updateAction = () async {
+        /*:
+         await LaunchReview.launch(
+              androidAppId: androidApplicationId,
+              iOSAppId: iOSAppId, writeReview: false
+          );
+
+          await StoreLauncher.openWithStore(iOSAppId).catchError((e) {
           final InAppReview inAppReview = InAppReview.instance;
 
           inAppReview.openStoreListing(appStoreId:  androidApplicationId);
         });
+          * */
+        bool success = await StoreLauncher.launchStore(
+          packageName: androidApplicationId, // Optional for Android
+          appId: iOSAppId, // Required for iOS
+        );
+
       };
       final platform = Theme.of(context).platform;
       await showDialog(
